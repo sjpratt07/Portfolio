@@ -1,0 +1,46 @@
+# Importing required modules
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Reading in the data
+stock_data = pd.read_csv("datasets/stock_data.csv", index_col="Date", parse_dates=True).dropna()
+benchmark_data = pd.read_csv("datasets/benchmark_data.csv", index_col="Date", parse_dates=True).dropna()
+
+# Display summary for stock_data
+# print(stock_data.head())
+# stock_data.info()
+# ----------
+
+# Display summary for benchmark_data
+# print(benchmark_data.head())
+# benchmark_data.info()
+
+# calculate daily stock_data returns
+stock_returns = stock_data.pct_change()
+
+# calculate daily benchmark_data returns
+sp_returns = benchmark_data['S&P 500'].pct_change()
+
+# calculate the difference in daily returns
+excess_returns = stock_returns.sub(sp_returns, axis=0)
+
+# calculate the mean of excess_returns 
+avg_excess_return = excess_returns.mean()
+
+# plot avg_excess_returns
+avg_excess_return.plot.bar(title='Mean of the Return Difference')
+#----------
+
+# calculate the standard deviations
+sd_excess_return = excess_returns.std()
+
+# calculate the daily sharpe ratio
+daily_sharpe_ratio = avg_excess_return.div(sd_excess_return)
+
+# annualize the sharpe ratio
+annual_factor = np.sqrt(252)
+annual_sharpe_ratio = daily_sharpe_ratio.mul(annual_factor)
+
+# plot the annualized sharpe ratio
+annual_sharpe_ratio.plot.bar(title='Annualized Sharpe Ratio: Stocks vs S&P 500')
